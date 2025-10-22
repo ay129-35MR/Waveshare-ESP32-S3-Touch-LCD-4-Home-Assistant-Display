@@ -14,9 +14,6 @@ Here’s the Waveshare ESP32-S3 dashboard in action:
 ![Dashboard running on Waveshare ESP32-S3](IMG_6598.jpeg)
 ![Dashboard running on Waveshare ESP32-S3](IMG_6600.jpeg)
 ![Parts](IMG_6603.jpeg)
-![Parts](IMG_6596.jpeg)
-![Parts](IMG_6592.jpeg)
-![Parts](IMG_6603.jpeg)
 
 # Inspiration 
 I really wanted a homebrew Pimoroni Presto to be a desktop home assistant powered doorbell intercom.  I went as far as getting aluminum sheet laser-cut to the right size at JLCPCB.  The first one promptly snapped on trying to bend it into the pimoroni L shape - totally crap aluminium.  Some cold weld turned the broken bit into a y shape stand.  Improvise. Adapt.  Overcome.
