@@ -9,6 +9,17 @@
 
 Even though the ESP32-S3 can’t run a full web browser, this project makes it possible to **view and interact** with your Home Assistant dashboard — rendered remotely and streamed to the display in real time.
 
+Here’s the Waveshare ESP32-S3 dashboard in action:
+
+![Dashboard running on Waveshare ESP32-S3](.IMG_6594.jpeg)
+
+![Dashboard running on Waveshare ESP32-S3](.IMG_6593.jpeg)
+
+![Parts](.IMG_6596.jpeg)
+![Parts](.IMG_6595.jpeg)
+![Parts](.IMG_6592.jpeg)
+
+
 ---
 
 ## 📑 Table of Contents
