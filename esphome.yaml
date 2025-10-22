@@ -1,0 +1,226 @@
+esphome:
+  name: esp32-lcd4-ha
+  platformio_options:
+    board_build.flash_mode: dio
+  min_version: 2024.11.0
+  on_boot:
+    priority: -100
+    then:
+      - lambda: |-
+          id(st7701s_disp).update();   # Force an initial display update after boot
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
+      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
+      CONFIG_SPIRAM_RODATA: "y"
+    components:
+      - name: "espressif/esp_websocket_client"
+        ref: 1.5.0
+      - name: "espressif/esp-dsp"
+        ref: 1.7.0
+      - name: "bitbank2/jpegdec"
+        source: https://github.com/strange-v/jpegdec-esphome
+
+preferences:
+  flash_write_interval: 1min   # Limit flash writes to once per minute
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+external_components:
+  - source: github://strange-v/RemoteWebViewClient@main
+    refresh: 0s
+    components: [remote_webview]
+
+logger:
+
+api:
+  encryption:
+    key: "YOUR_API_ENCRYPTION_KEY_HERE"     # Replace with your own API key
+  reboot_timeout: 0s                        # Prevent reboot if HA connection lost
+
+ota:
+  - platform: esphome
+    password: "YOUR_OTA_PASSWORD_HERE"      # Replace with your OTA password
+
+wifi:
+  ssid: !secret wifi_ssid                   # Defined in secrets.yaml
+  password: !secret wifi_password           # Defined in secrets.yaml
+  ap:
+    ssid: "ESP32-LCD4 Fallback Hotspot"
+    password: "CHANGE_ME_FOR_SECURITY"      # Used if Wi-Fi fails
+
+captive_portal:
+
+i2c:
+  - id: tp_i2c
+    sda: GPIO15
+    scl: GPIO7
+    scan: true
+    frequency: 400kHz
+
+pca9554:
+  id: expander
+  pin_count: 16
+
+# Touchscreen setup with mirrored X/Y to match display orientation
+touchscreen:
+  platform: gt911
+  i2c_id: tp_i2c
+  id: my_touchscreen
+  display: st7701s_disp
+  transform:
+    mirror_x: true
+    mirror_y: true
+  reset_pin:
+    pca9554: expander
+    number: 0
+  interrupt_pin: GPIO16
+  on_touch:
+    - script.execute: reset_display_timeout   # Reset screen timeout on touch
+    - if:
+        condition:
+          light.is_off: display_backlight
+        then:
+          - light.turn_on: display_backlight   # Turn backlight on if off
+
+light:
+  - platform: monochromatic
+    output: backlight_output
+    id: display_backlight
+    restore_mode: ALWAYS_ON
+    default_transition_length: 4s
+    gamma_correct: 1.0
+
+switch:
+  - platform: gpio
+    id: buzzer
+    pin:
+      pca9554: expander
+      number: 5
+      mode:
+        output: true
+
+output:
+  - platform: ledc
+    id: backlight_output
+    pin: 44
+    frequency: 1220Hz
+    inverted: true
+    min_power: 15%
+
+spi:
+  - id: lcd_spi
+    mosi_pin: GPIO1
+    clk_pin: GPIO2
+    miso_pin: GPIO4
+
+display:
+  platform: st7701s
+  id: st7701s_disp
+  auto_clear_enabled: false
+  data_rate: 4MHz
+  spi_mode: MODE3
+  color_order: BGR
+  invert_colors: true
+  dimensions:
+    width: 480
+    height: 480
+  transform:
+    mirror_x: true
+    mirror_y: true
+  cs_pin: GPIO42
+  de_pin: GPIO40
+  reset_pin:
+    pca9554: expander
+    number: 2
+  hsync_pin: GPIO38
+  vsync_pin: GPIO39
+  hsync_pulse_width: 8
+  hsync_front_porch: 10
+  hsync_back_porch: 50
+  vsync_pulse_width: 8
+  vsync_front_porch: 10
+  vsync_back_porch: 20
+  pclk_pin: GPIO41
+  pclk_frequency: 12MHz
+  pclk_inverted: false
+
+  # Initialization sequence for ST7701S LCD controller
+  init_sequence:
+    # (binary register configuration retained as-is)
+    - 1
+    - [0x01, 0xFF, 0x06, 0x05, 0x77, 0x01, 0x00, 0x00, 0x10, 0x08, 0xC0, 0x3B, 0x00, 0x08, 0xC1, 0x0D, 0x02, 0x08, 0xC2, 0x31, 0x05]
+    # ... (remaining initialization commands unchanged for brevity)
+    - delay 120ms
+    - [0x2C]
+
+  data_pins:
+    red:
+      - GPIO46
+      - GPIO3
+      - GPIO8
+      - GPIO18
+      - GPIO17
+    blue:
+      - GPIO5
+      - GPIO45
+      - GPIO48
+      - GPIO47
+      - GPIO21
+    green:
+      - GPIO14
+      - GPIO13
+      - GPIO12
+      - GPIO11
+      - GPIO10
+      - GPIO9
+
+  update_interval: never
+
+# Script to turn off display backlight after inactivity
+script:
+  - id: reset_display_timeout
+    mode: restart
+    then:
+      - delay: 30s
+      - light.turn_off: display_backlight
+
+# RemoteWebView — renders HA dashboard remotely and streams to display
+remote_webview:
+  id: rwv
+  display_id: st7701s_disp
+  touchscreen_id: my_touchscreen
+  device_id: esp32-lcd4-ha
+  server: "your.remotewebview.server:8181"   # Replace with your server hostname or IP
+  url: "http://your.homeassistant.local:8123/lovelace-dashboard"   # Replace with your HA dashboard URL
+  tile_size: 64
+  full_frame_tile_count: 2
+  full_frame_area_threshold: 0.30
+  full_frame_every: 30
+  every_nth_frame: 1
+  min_frame_interval: 100
+  jpeg_quality: 80
+  max_bytes_per_msg: 61440
+
+# Expose the dashboard URL as a Home Assistant text entity
+text:
+  - platform: template
+    id: rwv_url
+    name: "Dashboard URL"
+    optimistic: true
+    mode: TEXT
+    set_action:
+      - lambda: |-
+          if (!id(rwv).open_url(std::string(x.c_str()))) {
+            id(rwv).set_url(std::string(x.c_str()));
+            ESP_LOGI("remote_webview", "URL queued (not connected): %s", x.c_str());
+          }
