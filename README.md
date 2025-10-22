@@ -103,78 +103,23 @@ You can then configure your **RemoteWebViewServer** to point to that dashboard b
 
 ## ⚡ Quick Start
 
-### 1. Clone This Repository
 ```bash
+# 1. Clone This Repository
 git clone https://github.com/<yourusername>/esp32-s3-touch-lcd4-ha.git
 cd esp32-s3-touch-lcd4-ha
 
-### 2. Adjust Secrets
+# 2. Adjust Secrets
+# Create or update your secrets.yaml with your Wi-Fi and API credentials.
 
-Create or update your secrets.yaml with your Wi-Fi and API credentials.
-
-### 3. Flash the Device
-
-Use ESPHome (CLI or dashboard):
-
+# 3. Flash the Device
+# Use ESPHome (CLI or dashboard) to upload the firmware:
 esphome run esphome/esp32-lcd4-ha.yaml
 
-### 4. Run the RemoteWebViewServer
+# 4. Run the RemoteWebViewServer
+# Follow instructions from the RemoteWebViewServer repo to install and launch it on Ubuntu Server:
+# https://github.com/strange-v/RemoteWebViewServer
 
-Follow instructions from the RemoteWebViewServer repo
- to install and launch it on Ubuntu Server.
-
-### 5. Connect and Enjoy
-
-Power up the ESP32-S3
-
-It connects to your Wi-Fi and streams the dashboard from your Home Assistant instance
-
-Interact directly via touch on the display!
-
-(This guide assumes basic familiarity with ESPHome and ESP32 flashing.)
-
-📸 Demo
-
-Photos and video coming soon — showing the dashboard running on the Waveshare 480×480 display.
-
-🪄 Future Improvements
-
-Sleep/wake on touch or motion
-
-Brightness scheduling based on time of day
-
-Wall-mount or desktop enclosure designs
-
-Multi-display support via one RemoteWebViewServer instance
-
-🙏 Credits
-
-Strange-V
- — RemoteWebViewClient & Server
-
-Bitbank2
- — JPEG decoder
-
-Waveshare
- — ESP32-S3-Touch-LCD-4 hardware
-
-ESPHome
- — IoT firmware framework
-
-Home Assistant
- — Dashboard UI
-
-⚖️ License
-
-This project is licensed under the MIT License — see LICENSE
- for details.
-
-
----
-
-### 🧩 Notes:
-- The `<yourusername>` placeholder in the clone command should be replaced with your GitHub username or organization.
-- Once you upload your photos, add them under `/assets` or `/images` and link them in the **Demo** section using:
-
-  ```markdown
-  ![Dashboard running on Waveshare ESP32-S3](./images/demo1.jpg)
+# 5. Connect and Enjoy
+# - Power up the ESP32-S3
+# - It connects to your Wi-Fi and streams the dashboard from your Home Assistant instance
+# - Interact directly via touch on the display!
