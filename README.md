@@ -66,14 +66,14 @@ A Linux server renders your dashboard in **headless Chromium**, sends it as comp
 
 The ESPHome YAML is included under [`/esphome.yaml`](./esphome.yaml).
 
+## 🐳 Docker Deployment
 
-🐳 Docker Deployment
+In this setup, the **RemoteWebViewServer** (which handles the Chromium rendering and WebSocket streaming) is deployed using **Docker** for simplicity and reliability.  
+You can deploy it using other methods if preferred (for example, directly from source or in a Python virtual environment), but Docker provides an isolated, portable, and easy-to-update runtime.
 
-The RemoteWebViewServer runs in a Docker container using the official image from Strange-V.
-This service handles the headless Chromium rendering of your Home Assistant dashboard and streams it to your ESP32 display.
+Below is the `docker-compose.yml` entry used for this project:
 
-Add the following entry to your existing docker-compose.yml:
-
+```yaml
 services:
   #-------------------
   # Home Assistant Dashboard Server
@@ -109,6 +109,7 @@ services:
       timeout: 3s
       retries: 5
       start_period: 10s
+```
 
 🧩 How It Works
 
@@ -165,12 +166,9 @@ You can then configure your **RemoteWebViewServer** to point to that dashboard b
 
 ## ⚡ Quick Start
 
-```bash
 # 1. Clone This Repository
-git clone https://github.com/<yourusername>/esp32-s3-touch-lcd4-ha.git
-cd esp32-s3-touch-lcd4-ha
 
-# 2. Adjust Secrets
+# 2. Adjust Secrets in esphome yaml
 # Create or update your secrets.yaml with your Wi-Fi and API credentials.
 
 # 3. Flash the Device
