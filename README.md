@@ -16,8 +16,9 @@ Here’s the Waveshare ESP32-S3 dashboard in action:
 
 ![Dashboard running on Waveshare ESP32-S3](IMG_6593.jpeg)
 
-![Parts](IMG_6596.jpeg)
-![Parts](IMG_6595.jpeg)
+![Parts](IMG_6596.jpeg)![Parts](IMG_6602.jpeg)
+![Parts](IMG_6603.jpeg)
+![Parts](IMG_6600.jpeg)
 ![Parts](IMG_6592.jpeg)
 
 # Inspiration 
