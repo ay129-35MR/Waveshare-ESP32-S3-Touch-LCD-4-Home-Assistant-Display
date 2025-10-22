@@ -1,4 +1,4 @@
-# 🖥️ Waveshare ESP32-S3-Touch-LCD-4 (480×480, Rev 3.0) – Home Assistant Dashboard Display
+# 🖥️ Waveshare ESP32-S3-Touch-LCD-4 (480×480, Rev 3.0) – Home Assistant Dashboard Display 
 
 [![ESPHome](https://img.shields.io/badge/ESPHome-2025-blue.svg)](https://esphome.io/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Compatible-brightgreen.svg)](https://www.home-assistant.io/)
@@ -20,6 +20,7 @@ Even though the ESP32-S3 can’t run a full web browser, this project makes it p
 - [Interactivity](#-interactivity)
 - [Recommended Dashboard Setup](#-recommended-dashboard-setup)
 - [Quick Start](#-quick-start)
+- [Docker Deployment](#-docker-deployment)
 - [Demo](#-demo)
 - [Future Improvements](#-future-improvements)
 - [Credits](#-credits)
@@ -32,7 +33,6 @@ Even though the ESP32-S3 can’t run a full web browser, this project makes it p
 This setup turns the **ESP32-S3 Touch LCD** into a **remote web terminal** for Home Assistant.
 
 A Linux server renders your dashboard in **headless Chromium**, sends it as compressed frames to the ESP32 over **WebSockets**, and receives touch input back for full interactivity.
-
 
 ---
 
@@ -64,7 +64,69 @@ A Linux server renders your dashboard in **headless Chromium**, sends it as comp
 
 ## ⚙️ Configuration
 
-The ESPHome YAML is included under [`/esphome/esp32-lcd4-ha.yaml`](./esphome/esp32-lcd4-ha.yaml).
+The ESPHome YAML is included under [`/esphome.yaml`](./esphome.yaml).
+
+
+🐳 Docker Deployment
+
+The RemoteWebViewServer runs in a Docker container using the official image from Strange-V.
+This service handles the headless Chromium rendering of your Home Assistant dashboard and streams it to your ESP32 display.
+
+Add the following entry to your existing docker-compose.yml:
+
+services:
+  #-------------------
+  # Home Assistant Dashboard Server
+  #-------------------
+  rwvserver:
+    image: strangev/remote-webview-server:latest
+    container_name: remote-webview-server
+    restart: unless-stopped
+    environment:
+      SCREEN_W: 480
+      SCREEN_H: 480
+      TILE_SIZE: 32
+      FULL_FRAME_TILE_COUNT: 1
+      FULL_FRAME_AREA_THRESHOLD: 0.50  # Match your client YAML settings
+      FULL_FRAME_EVERY: 50              # Match your client YAML settings
+      EVERY_NTH_FRAME: 1
+      MIN_FRAME_INTERVAL_MS: 80
+      JPEG_QUALITY: 85
+      MAX_BYTES_PER_MESSAGE: 61440
+      WS_PORT: 8181
+      DEBUG_PORT: 9221
+      HEALTH_PORT: 18080
+      USER_DATA_DIR: /pw-data
+    ports:
+      - "8181:8181"   # WebSocket port (update if needed)
+      - "9222:9222"   # Debug / DevTools port (optional)
+    volumes:
+      - ./pw-data:/pw-data   # Persistent user data (browser cache, cookies)
+    shm_size: 2gb
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:18080 || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+🧩 How It Works
+
+When you start the container (docker compose up -d rwvserver), it launches a headless Chromium browser inside the container.
+
+The browser opens the URL specified in your ESPHome YAML (remote_webview → url:).
+
+The server captures the rendered output as JPEG tiles, compresses them, and streams them to your ESP32 over WebSockets.
+
+Touch inputs from the ESP32 are sent back to the server, which injects them into the browser for full interactivity.
+
+⚙️ Notes
+
+Update the ports section (8181, 9222) to suit your local setup — especially if you already have services using those ports.
+
+The ./pw-data volume stores Chromium’s persistent session data, so your dashboard can remain logged in.
+
+FULL_FRAME_* and TILE_SIZE values should match your ESPHome YAML configuration for best performance.
 
 ### Highlights
 - Secure Home Assistant API with encryption  
