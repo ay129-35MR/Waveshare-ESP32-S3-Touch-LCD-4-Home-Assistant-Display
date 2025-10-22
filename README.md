@@ -12,8 +12,7 @@ Even though the ESP32-S3 can’t run a full web browser, this project makes it p
 
 Here’s the Waveshare ESP32-S3 dashboard in action:
 
-![Dashboard running on Waveshare ESP32-S3](IMG_6594.jpeg)
-![Parts](IMG_6600.jpeg)
+![Dashboard running on Waveshare ESP32-S3](IMG_6600.jpeg)
 ![Parts](IMG_6603.jpeg)
 ![Parts](IMG_6596.jpeg)
 ![Parts](IMG_6592.jpeg)
