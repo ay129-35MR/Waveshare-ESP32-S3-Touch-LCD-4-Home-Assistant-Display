@@ -5,6 +5,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-ESP32--S3-orange.svg)](https://www.waveshare.com/esp32-s3-touch-lcd-4.htm)
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/ay129)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/donate?business=nyashachipanga%40yahoo.com&currency_code=GBP)
+
+
 > 🧠 Bring your **Waveshare ESP32-S3-Touch-LCD-4 (480×480 Pixels, Rev 3.0)** to life as a **live, touch-enabled Home Assistant dashboard** using ESPHome and Strange-V’s RemoteWebView system.  Huge thanks to Ukrainian Developer [@strange-v](https://github.com/strange-v) for the incredible RemoteWebViewClient and Server projects that make this setup possible!  
 
 
